@@ -10,11 +10,13 @@ const enabledToggle = document.querySelector<HTMLInputElement>("#enabled");
 const blurToggle = document.querySelector<HTMLInputElement>("#blur");
 const chimeToggle = document.querySelector<HTMLInputElement>("#chime");
 const status = document.querySelector<HTMLParagraphElement>("#status");
+const sitesLink = document.querySelector<HTMLButtonElement>("#sites");
 if (
   enabledToggle === null ||
   blurToggle === null ||
   chimeToggle === null ||
-  status === null
+  status === null ||
+  sitesLink === null
 ) {
   throw new Error("popup markup missing");
 }
@@ -39,13 +41,13 @@ async function render(): Promise<void> {
   chimeToggle!.checked = settings.chimeOnSkip;
   if (!settings.enabled) {
     status!.textContent = "Off — ads play at full volume.";
-    status!.className = "";
+    status!.className = "status";
   } else if (reply.mutedByUs) {
     status!.textContent = "Ad break — tab muted.";
-    status!.className = "muting";
+    status!.className = "status muting";
   } else {
-    status!.textContent = "Listening. Your music is untouched.";
-    status!.className = "";
+    status!.textContent = "Ready. Your music is untouched.";
+    status!.className = "status";
   }
 }
 
@@ -57,6 +59,9 @@ blurToggle.addEventListener("change", () => {
 });
 chimeToggle.addEventListener("change", () => {
   void setSetting("chimeOnSkip", chimeToggle!.checked).then(render);
+});
+sitesLink.addEventListener("click", () => {
+  void api.runtime.openOptionsPage();
 });
 
 void render();

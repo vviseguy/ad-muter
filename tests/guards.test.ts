@@ -14,6 +14,8 @@ import { readFile, readdir } from "node:fs/promises";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
+import { SUPPORTED_SITES } from "../src/shared/sites.js";
+import { adapterFor } from "../src/sites/registry.js";
 // @ts-ignore — plain-JS build script, imported for its pure manifest composer
 import { TARGETS, makeManifest } from "../scripts/build.mjs";
 
@@ -100,6 +102,21 @@ describe("guard: frozen permission surface", () => {
       );
       expect(manifest.host_permissions, target).toBeUndefined();
       expect(manifest.content_scripts, target).toEqual(base.content_scripts);
+    }
+  });
+
+  it("manifest origins, the supported-site list, and adapters agree", async () => {
+    const base = JSON.parse(
+      await readFile(join(ROOT, "manifest", "base.json"), "utf8"),
+    );
+    // One source of truth, three consumers: the options screen shows
+    // SUPPORTED_SITES, the manifest grants exactly those origins, and every
+    // listed site has a content-side adapter. Drift in any direction fails.
+    expect(base.content_scripts[0].matches).toEqual(
+      SUPPORTED_SITES.map((site) => `https://${site.hostname}/*`),
+    );
+    for (const site of SUPPORTED_SITES) {
+      expect(adapterFor(site.hostname), site.hostname).not.toBeNull();
     }
   });
 });

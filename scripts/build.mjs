@@ -64,6 +64,7 @@ async function main() {
       content: path("src/content/index.ts"),
       background: path("src/background/index.ts"),
       popup: path("src/popup/popup.ts"),
+      options: path("src/options/options.ts"),
     };
     if (target === "chrome") {
       entryPoints.offscreen = path("src/offscreen/offscreen.ts");
@@ -79,6 +80,8 @@ async function main() {
     });
 
     await cp(path("src/popup/popup.html"), out("popup.html"));
+    await cp(path("src/options/options.html"), out("options.html"));
+    await cp(path("src/ui/theme.css"), out("theme.css"));
     if (target === "chrome") {
       await cp(path("src/offscreen/offscreen.html"), out("offscreen.html"));
     }

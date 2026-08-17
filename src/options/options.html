@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Ad Muter — Sites</title>
+    <link rel="stylesheet" href="theme.css" />
+    <style>
+      body {
+        min-width: 300px;
+        max-width: 420px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Sites</h1>
+    </header>
+    <p class="note">
+      Ad Muter runs only on the sites below — that list is fixed by the
+      extension's permissions. Switch one off to leave it completely alone.
+    </p>
+    <div id="site-list"></div>
+    <p class="note">
+      Adding a site takes a code change and a new version of the extension:
+      it cannot gain access to new sites at runtime, by design.
+    </p>
+    <script src="options.js"></script>
+  </body>
+</html>

@@ -114,6 +114,17 @@ output muting through browser APIs if it goes looking; no tool can promise
 invisibility. See the honest version of this answer in
 [docs/PRIVACY.md](docs/PRIVACY.md).)
 
+**Can I turn it off for just one site?**
+Yes — right-click the extension icon → **Options** (or the **Sites…** link
+in the popup) for per-site switches. Switching a site off releases any mute
+it holds immediately.
+
+**Can I add my own sites?**
+No, and that's deliberate. The site list is fixed by the extension's
+manifest; adding one takes a code change and a new version. An extension
+that could grow its own site access at runtime would be exactly the kind of
+tool this project exists not to be.
+
 **Why chime instead of auto-skipping the ad?**
 Because the click is the line. Everything this extension does is on the
 listener's side of the glass: what reaches your ears and eyes. The moment it

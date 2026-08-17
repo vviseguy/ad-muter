@@ -12,26 +12,36 @@
  */
 import { api } from "../shared/api.js";
 import type { Message, StatusReply } from "../shared/messages.js";
-import { getSettings, onSettingsChanged } from "../shared/settings.js";
+import {
+  getSettings,
+  onSettingsChanged,
+  siteOn,
+  type Settings,
+} from "../shared/settings.js";
 
 const BADGE_TEXT = "AD";
 const BADGE_COLOR = "#b91c1c";
 
+/**
+ * Per-tab bookkeeping: `mutedTab:<id>` → the site's hostname. Storing the
+ * hostname (not just a flag) lets a per-site switch-off release exactly the
+ * mutes that site holds.
+ */
 const recordKey = (tabId: number): string => `mutedTab:${tabId}`;
 
 async function wasMutedByUs(tabId: number): Promise<boolean> {
   const stored = await api.storage.session.get(recordKey(tabId));
-  return stored[recordKey(tabId)] === true;
+  return typeof stored[recordKey(tabId)] === "string";
 }
 
-async function onAdStarted(tabId: number): Promise<void> {
+async function onAdStarted(tabId: number, hostname: string): Promise<void> {
   const tab = await api.tabs.get(tabId);
   // Already muted (by the user, another extension, or us after a missed
   // cleanup): don't stack a claim on top of someone else's mute.
   if (tab.mutedInfo?.muted === true) return;
 
   await api.tabs.update(tabId, { muted: true });
-  await api.storage.session.set({ [recordKey(tabId)]: true });
+  await api.storage.session.set({ [recordKey(tabId)]: hostname });
   await api.action.setBadgeText({ tabId, text: BADGE_TEXT });
 }
 
@@ -42,9 +52,23 @@ async function onAdEnded(tabId: number): Promise<void> {
   await api.action.setBadgeText({ tabId, text: "" });
 }
 
-async function handleAdState(tabId: number, inAd: boolean): Promise<void> {
-  if (!(await getSettings()).enabled) return;
-  await (inAd ? onAdStarted(tabId) : onAdEnded(tabId));
+async function handleAdState(
+  tabId: number,
+  hostname: string,
+  inAd: boolean,
+): Promise<void> {
+  const settings = await getSettings();
+  if (!settings.enabled || !siteOn(settings, hostname)) return;
+  await (inAd ? onAdStarted(tabId, hostname) : onAdEnded(tabId));
+}
+
+/** Hostname of the page a message came from; null for non-page senders. */
+function senderHostname(sender: chrome.runtime.MessageSender): string | null {
+  try {
+    return sender.url === undefined ? null : new URL(sender.url).hostname;
+  } catch {
+    return null;
+  }
 }
 
 async function buildStatus(tabId: number | null): Promise<StatusReply> {
@@ -77,9 +101,11 @@ async function ensureOffscreenDocument(): Promise<void> {
   }
 }
 
-async function playChime(): Promise<void> {
+async function playChime(hostname: string): Promise<void> {
   const settings = await getSettings();
-  if (!settings.enabled || !settings.chimeOnSkip) return;
+  if (!settings.enabled || !settings.chimeOnSkip || !siteOn(settings, hostname)) {
+    return;
+  }
 
   if (offscreenApi === undefined) {
     void new Audio(api.runtime.getURL("chime.wav")).play().catch(() => undefined);
@@ -91,11 +117,23 @@ async function playChime(): Promise<void> {
     .catch(() => undefined);
 }
 
-/** Release every mute we hold (used when the user switches the extension off). */
-async function releaseAllMutes(): Promise<void> {
+/**
+ * Release the mutes whose site matches the predicate — all of them when the
+ * master switch goes off, one site's worth when its toggle does.
+ */
+async function releaseMutes(
+  shouldRelease: (hostname: string) => boolean,
+): Promise<void> {
   const stored = await api.storage.session.get(null);
   const tabIds = Object.keys(stored)
-    .filter((key) => key.startsWith("mutedTab:") && stored[key] === true)
+    .filter((key) => {
+      const value = stored[key];
+      return (
+        key.startsWith("mutedTab:") &&
+        typeof value === "string" &&
+        shouldRelease(value)
+      );
+    })
     .map((key) => Number(key.slice("mutedTab:".length)));
   await Promise.all(
     tabIds.map((tabId) => onAdEnded(tabId).catch(() => undefined)),
@@ -106,13 +144,15 @@ api.runtime.onMessage.addListener(
   (message: Message, sender, sendResponse): boolean | undefined => {
     if (message.kind === "ad-state") {
       const tabId = sender.tab?.id;
-      if (tabId !== undefined) {
-        void handleAdState(tabId, message.inAd).catch(() => undefined);
+      const hostname = senderHostname(sender);
+      if (tabId !== undefined && hostname !== null) {
+        void handleAdState(tabId, hostname, message.inAd).catch(() => undefined);
       }
       return undefined;
     }
     if (message.kind === "skip-available") {
-      void playChime().catch(() => undefined);
+      const hostname = senderHostname(sender);
+      if (hostname !== null) void playChime(hostname).catch(() => undefined);
       return undefined;
     }
     if (message.kind === "get-status") {
@@ -128,9 +168,12 @@ api.tabs.onRemoved.addListener((tabId) => {
   void api.storage.session.remove(recordKey(tabId));
 });
 
-// Switching the extension off releases any mute it holds, immediately.
-onSettingsChanged((settings) => {
-  if (!settings.enabled) void releaseAllMutes();
+// Switching the extension (or one site) off releases the mutes it holds,
+// immediately — the user's "off" must never leave a tab silenced.
+onSettingsChanged((settings: Settings) => {
+  void releaseMutes(
+    (hostname) => !settings.enabled || !siteOn(settings, hostname),
+  );
 });
 
 void api.action.setBadgeBackgroundColor({ color: BADGE_COLOR });

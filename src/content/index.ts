@@ -21,6 +21,7 @@ import {
   DEFAULT_SETTINGS,
   getSettings,
   onSettingsChanged,
+  siteOn,
   type Settings,
 } from "../shared/settings.js";
 import { adapterFor } from "../sites/registry.js";
@@ -45,13 +46,22 @@ function run(adapter: SiteAdapter): void {
   onSettingsChanged((changed) => {
     settings = changed;
     applyCosmetics();
+    // Re-announce the current state: if the user just re-enabled the
+    // extension (or this site) mid-ad, the background missed the original
+    // "ad started" and can act on this one. Gated states are ignored there,
+    // and re-announcing an already-acted-on state is a no-op — safe always.
+    const message: AdStateMessage = { kind: "ad-state", inAd: detector.inAd };
+    void api.runtime.sendMessage(message).catch(() => undefined);
   });
 
   function applyCosmetics(): void {
     setBlur(
       document,
       adapter.cosmeticTargets(document),
-      detector.inAd && settings.enabled && settings.blurAds,
+      detector.inAd &&
+        settings.enabled &&
+        settings.blurAds &&
+        siteOn(settings, location.hostname),
     );
   }
 

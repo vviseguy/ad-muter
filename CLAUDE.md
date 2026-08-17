@@ -11,7 +11,10 @@ posture is the product.
 - `src/sites/<site>/` — one adapter per player; DOM assumptions only in each `selectors.ts`
 - `src/content/` — the loop (index.ts) + blur cosmetics (cosmetics.ts)
 - `src/background/` — sole audio authority (tab-mute API)
-- `src/shared/` — message protocol, settings, browser shim
+- `src/shared/` — message protocol, settings, browser shim, sites.ts (the
+  single supported-site list; options/manifest/adapters pinned to it)
+- `src/options/` + `src/ui/theme.css` — per-site switches screen; popup and
+  options share the one stylesheet
 - `manifest/base.json` + `scripts/build.mjs` — one base, per-browser overlays
 - `tests/guards.test.ts` — pins zero-network + frozen permissions; CI fails if violated
 

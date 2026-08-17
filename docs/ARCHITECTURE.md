@@ -38,6 +38,20 @@ cross-browser API shim (`api.ts`).
   code path that presses a player control.
 - **Every runtime message is typed** in `shared/messages.ts`. There are four.
 
+## Settings and who enforces them
+
+Settings live flat in `storage.sync`: three booleans plus one `site:<hostname>`
+key per supported site (missing = on). `shared/sites.ts` is the single
+site list; the manifest's origins and the content adapters are pinned to it
+by a guard test, and the options page renders it.
+
+Enforcement is split by who owns the action:
+
+| Setting | Enforced by | Why there |
+|---|---|---|
+| `enabled`, `site:*` (mute/chime) | background | It owns tab state and can release mutes when a switch turns off — from the sender's origin, so it never needs to read tab URLs. |
+| `blurAds` + the above (blur) | content | Blur is the content script's one page write; it re-announces its current state on any settings change so a mid-ad re-enable still mutes. |
+
 ## The chime, and why it needs an extra context
 
 The ad tab is muted — by us — so the "you can skip now" chime cannot play
