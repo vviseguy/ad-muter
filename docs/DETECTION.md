@@ -43,10 +43,12 @@ ad starts.
 Blur target: the whole now-playing bar (it shows the ad's artwork and copy;
 nothing in it is needed mid-ad).
 
-**Verification status**: authored August 2026. Title + track link are the
-load-bearing pair; the ad marker is written broadly
-(`[data-testid*="advert" i]`, `[aria-label*="advertisement" i]`) and
-best-effort — confirming it requires catching a live ad on a free account.
+**Verification status**: **end-to-end verified live 2026-08-17** — real ad
+breaks muted and unmuted cleanly on a free account. Per-signal notes: title
++ track link are the load-bearing pair; the ad marker is written broadly
+(`[data-testid*="advert" i]`, `[aria-label*="advertisement" i]`) and remains
+best-effort — the end-to-end check doesn't reveal which signal fired first,
+so per-signal observations from the recipe below are still welcome.
 
 ## YouTube (`src/sites/youtube/`)
 
@@ -75,8 +77,10 @@ Skippability: the Skip button (`.ytp-skip-ad-button`, older
 is the signal, checked per sample, announced once per break on its rising
 edge. This only rings the chime; the extension never clicks the button.
 
-**Verification status**: authored August 2026 against the standard watch
-player. Shorts and embedded players are out of scope for now.
+**Verification status**: **end-to-end verified live 2026-08-17** — pre-roll
+ads muted and blurred, skip chime fired, clean unmute on content — against
+the standard watch player. Shorts and embedded players are out of scope for
+now.
 
 ## Verification recipes (~2 minutes each)
 
