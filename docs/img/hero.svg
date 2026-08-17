@@ -1,5 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 332" width="880" height="332" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">
-  <!-- Self-backgrounded so it reads identically on GitHub light and dark. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 312" width="880" height="312" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <!-- Self-backgrounded so it reads identically on GitHub light and dark.
+       No caption text: the scene carries the meaning; the README's img
+       title attribute carries the words, for those who hover. -->
+  <title>Ad break: tab muted and player blurred, Skip stays crisp, chime on skippable.</title>
   <defs>
     <filter id="adblur" x="-20%" y="-20%" width="140%" height="140%">
       <feGaussianBlur stdDeviation="9"/>
@@ -11,7 +14,7 @@
     </linearGradient>
   </defs>
 
-  <rect width="880" height="332" rx="16" fill="#0f172a"/>
+  <rect width="880" height="312" rx="16" fill="#0f172a"/>
 
   <!-- ======================= left: the muted, blurred ad ============== -->
   <g transform="translate(36,30)">
@@ -36,12 +39,10 @@
     <!-- …while the Skip button stays crisp and clickable -->
     <rect x="356" y="212" width="104" height="34" rx="6" fill="#f8fafc"/>
     <text x="408" y="234" font-size="14" font-weight="650" fill="#0f172a" text-anchor="middle">Skip ▸</text>
-
-    <text x="0" y="284" font-size="12.5" fill="#64748b">Ad break: tab muted, visuals blurred — the Skip button stays sharp.</text>
   </g>
 
-  <!-- ======================= middle: the chime ======================== -->
-  <g transform="translate(556,138)">
+  <!-- ============ middle: the chime, sounding as Skip appears ========= -->
+  <g transform="translate(556,148)">
     <circle cx="1" cy="15" r="3" fill="#f59e0b"/>
     <g fill="none" stroke="#f59e0b" stroke-width="2.4" stroke-linecap="round">
       <path d="M6 8 a 16 16 0 0 1 8 12" opacity="0.9"/>
@@ -49,8 +50,6 @@
       <path d="M22 -4 a 32 32 0 0 1 16 24" opacity="0.35"/>
     </g>
   </g>
-  <text x="572" y="188" font-size="11.5" fill="#64748b" text-anchor="middle">chime:</text>
-  <text x="572" y="203" font-size="11.5" fill="#64748b" text-anchor="middle">skippable</text>
 
   <!-- ======================= right: the popup ========================= -->
   <g transform="translate(636,52)">

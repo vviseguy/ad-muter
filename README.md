@@ -3,20 +3,20 @@
 <p align="center"><b>Ads still play. Your speakers sit them out.</b></p>
 
 <p align="center">
-  <a href="https://github.com/vviseguy/ad-muter/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/vviseguy/ad-muter/actions/workflows/ci.yml/badge.svg" /></a>
-  <img alt="network access: none" src="https://img.shields.io/badge/network_access-none-2ea043" />
-  <img alt="permissions: 2" src="https://img.shields.io/badge/permissions-storage_+_offscreen-2ea043" />
-  <img alt="license: MIT OR Apache-2.0" src="https://img.shields.io/badge/license-MIT_OR_Apache--2.0-blue" />
+  <a href="https://github.com/vviseguy/ad-muter/actions/workflows/ci.yml"><img alt="CI" title="Every push: typecheck, 40 tests (including the guards below), and both browser builds" src="https://github.com/vviseguy/ad-muter/actions/workflows/ci.yml/badge.svg" /></a>
+  <img alt="network access: none" title="Not a promise: a guard test scans every source file for fetch, XHR, WebSocket, and beacons — CI fails if one appears" src="https://img.shields.io/badge/network_access-none-2ea043" />
+  <img alt="permissions: 2" title="storage (your toggles + which tabs we muted) and Chrome-only offscreen (plays the skip chime). The guard test pins this list." src="https://img.shields.io/badge/permissions-storage_+_offscreen-2ea043" />
+  <img alt="license: MIT OR Apache-2.0" title="Use either license — your choice" src="https://img.shields.io/badge/license-MIT_OR_Apache--2.0-blue" />
 </p>
 
 <p align="center">
-  <a href="https://github.com/vviseguy/ad-muter/releases/latest/download/ad-muter-chrome.zip"><img alt="Download for Chrome / Edge / Brave" src="docs/img/download-chromium.svg" width="250" /></a>
+  <a href="https://github.com/vviseguy/ad-muter/releases/latest/download/ad-muter-chrome.zip"><img alt="Download for Chrome / Edge / Brave" title="Latest release zip. Unzip it, then: chrome://extensions → Developer mode → Load unpacked" src="docs/img/download-chromium.svg" width="250" /></a>
   &nbsp;&nbsp;
-  <a href="https://github.com/vviseguy/ad-muter/releases/latest/download/ad-muter-firefox.zip"><img alt="Download for Firefox" src="docs/img/download-firefox.svg" width="178" /></a>
+  <a href="https://github.com/vviseguy/ad-muter/releases/latest/download/ad-muter-firefox.zip"><img alt="Download for Firefox" title="Latest release zip. about:debugging → This Firefox → Load Temporary Add-on" src="docs/img/download-firefox.svg" width="178" /></a>
 </p>
 
 <p align="center">
-  <img src="docs/img/hero.svg" width="760" alt="During an ad break: the tab is muted and the player blurred while the Skip button stays crisp; a chime marks the ad turning skippable; the popup shows Enabled, Blur ads, and Chime toggles." />
+  <img src="docs/img/hero.svg" width="760" title="During an ad break: the tab is muted and the player blurred, while Skip stays crisp and clickable. The chime marks the moment an ad turns skippable — you click, never the extension. Everything restores when content returns." alt="During an ad break: the tab is muted and the player blurred while the Skip button stays crisp; a chime marks the ad turning skippable; the popup shows Enabled, Blur ads, and Chime toggles." />
 </p>
 
 A browser extension that **mutes the tab during ad breaks** on the Spotify
