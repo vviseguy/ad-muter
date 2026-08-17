@@ -1,4 +1,4 @@
-import type { Verdict } from "./snapshot.js";
+import type { Verdict } from "./verdict.js";
 
 /** Emitted when the smoothed ad state flips. */
 export type Transition = "ad-started" | "ad-ended";

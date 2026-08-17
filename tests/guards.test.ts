@@ -72,8 +72,11 @@ describe("guard: frozen permission surface", () => {
     expect(base.host_permissions).toBeUndefined();
     expect(base.optional_permissions).toBeUndefined();
     expect(base.content_scripts).toHaveLength(1);
+    // The frozen origin list. Growing it is a deliberate act: it means a
+    // new site adapter shipped, and this guard is part of that diff.
     expect(base.content_scripts[0].matches).toEqual([
       "https://open.spotify.com/*",
+      "https://www.youtube.com/*",
     ]);
   });
 

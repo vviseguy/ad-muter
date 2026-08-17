@@ -1,5 +1,5 @@
 /**
- * Every DOM assumption about the web player lives in this one file.
+ * Every DOM assumption about the Spotify web player lives in this one file.
  * When the player's markup changes, this is the only place to update.
  *
  * Verification status: authored against the open.spotify.com player as of

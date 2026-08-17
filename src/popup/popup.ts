@@ -1,14 +1,17 @@
 /**
- * Popup: shows the current state and hosts the one setting.
+ * Popup: shows the current state and hosts the two settings.
  * All state lives in the background worker and storage; the popup is a view.
  */
 import { api } from "../shared/api.js";
 import type { GetStatusMessage, StatusReply } from "../shared/messages.js";
-import { setEnabled } from "../shared/settings.js";
+import { getSettings, setSetting } from "../shared/settings.js";
 
-const toggle = document.querySelector<HTMLInputElement>("#enabled");
+const enabledToggle = document.querySelector<HTMLInputElement>("#enabled");
+const blurToggle = document.querySelector<HTMLInputElement>("#blur");
 const status = document.querySelector<HTMLParagraphElement>("#status");
-if (toggle === null || status === null) throw new Error("popup markup missing");
+if (enabledToggle === null || blurToggle === null || status === null) {
+  throw new Error("popup markup missing");
+}
 
 async function activeTabId(): Promise<number | null> {
   const [tab] = await api.tabs.query({ active: true, currentWindow: true });
@@ -20,23 +23,30 @@ async function render(): Promise<void> {
     kind: "get-status",
     tabId: await activeTabId(),
   };
-  const reply = (await api.runtime.sendMessage(message)) as StatusReply;
+  const [settings, reply] = await Promise.all([
+    getSettings(),
+    api.runtime.sendMessage(message) as Promise<StatusReply>,
+  ]);
 
-  toggle!.checked = reply.enabled;
-  if (!reply.enabled) {
+  enabledToggle!.checked = settings.enabled;
+  blurToggle!.checked = settings.blurAds;
+  if (!settings.enabled) {
     status!.textContent = "Off — ads play at full volume.";
     status!.className = "";
   } else if (reply.mutedByUs) {
     status!.textContent = "Ad break — tab muted.";
     status!.className = "muting";
   } else {
-    status!.textContent = "Listening. Music is untouched.";
+    status!.textContent = "Listening. Your music is untouched.";
     status!.className = "";
   }
 }
 
-toggle.addEventListener("change", () => {
-  void setEnabled(toggle!.checked).then(render);
+enabledToggle.addEventListener("change", () => {
+  void setSetting("enabled", enabledToggle!.checked).then(render);
+});
+blurToggle.addEventListener("change", () => {
+  void setSetting("blurAds", blurToggle!.checked).then(render);
 });
 
 void render();

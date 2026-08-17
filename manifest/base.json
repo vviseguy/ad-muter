@@ -1,12 +1,15 @@
 {
   "manifest_version": 3,
   "name": "Ad Muter",
-  "version": "0.1.0",
-  "description": "Mutes the tab while the web player is on an ad break, then unmutes. Nothing is blocked, intercepted, or sent anywhere.",
+  "version": "0.2.0",
+  "description": "Mutes the tab — and optionally blurs the player — while a supported web player is on an ad break. Nothing is blocked, intercepted, or sent anywhere.",
   "permissions": ["storage"],
   "content_scripts": [
     {
-      "matches": ["https://open.spotify.com/*"],
+      "matches": [
+        "https://open.spotify.com/*",
+        "https://www.youtube.com/*"
+      ],
       "js": ["content.js"],
       "run_at": "document_idle"
     }

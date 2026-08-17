@@ -12,7 +12,7 @@
  */
 import { api } from "../shared/api.js";
 import type { Message, StatusReply } from "../shared/messages.js";
-import { isEnabled, onEnabledChanged } from "../shared/settings.js";
+import { getSettings, onSettingsChanged } from "../shared/settings.js";
 
 const BADGE_TEXT = "AD";
 const BADGE_COLOR = "#b91c1c";
@@ -43,13 +43,13 @@ async function onAdEnded(tabId: number): Promise<void> {
 }
 
 async function handleAdState(tabId: number, inAd: boolean): Promise<void> {
-  if (!(await isEnabled())) return;
+  if (!(await getSettings()).enabled) return;
   await (inAd ? onAdStarted(tabId) : onAdEnded(tabId));
 }
 
 async function buildStatus(tabId: number | null): Promise<StatusReply> {
   return {
-    enabled: await isEnabled(),
+    enabled: (await getSettings()).enabled,
     mutedByUs: tabId !== null && (await wasMutedByUs(tabId)),
   };
 }
@@ -88,8 +88,8 @@ api.tabs.onRemoved.addListener((tabId) => {
 });
 
 // Switching the extension off releases any mute it holds, immediately.
-onEnabledChanged((enabled) => {
-  if (!enabled) void releaseAllMutes();
+onSettingsChanged((settings) => {
+  if (!settings.enabled) void releaseAllMutes();
 });
 
 void api.action.setBadgeBackgroundColor({ color: BADGE_COLOR });

@@ -1,62 +1,84 @@
 /**
- * Content script. Runs only on open.spotify.com (see manifest).
+ * Content script. Runs only on the origins in the manifest, and picks the
+ * matching site adapter for the page it finds itself on.
  *
  * Responsibilities, in full:
- *   1. read the page   (read-page.ts → PlayerSnapshot)
- *   2. ask the core    (judge + AdDetector → transitions)
- *   3. tell background (one small message per transition)
+ *   1. read the page      (adapter.readVerdict)
+ *   2. ask the core       (AdDetector → transitions)
+ *   3. tell background    (one small message per transition; muting happens
+ *                          there, via the browser's tab-mute API)
+ *   4. apply cosmetics    (toggle the blur class — the one and only thing
+ *                          this script ever writes to the page)
  *
  * It never touches audio, never blocks anything, and never talks to the
- * network. Muting happens in the background worker via the tab-mute API.
+ * network.
  */
-import { AdDetector, type Transition } from "../core/detector.js";
-import { judge } from "../core/judge.js";
-import type { PlayerSnapshot } from "../core/snapshot.js";
+import { AdDetector } from "../core/detector.js";
+import type { Verdict } from "../core/verdict.js";
 import { api } from "../shared/api.js";
 import type { AdStateMessage } from "../shared/messages.js";
-import { readSnapshot } from "./read-page.js";
+import {
+  DEFAULT_SETTINGS,
+  getSettings,
+  onSettingsChanged,
+  type Settings,
+} from "../shared/settings.js";
+import { adapterFor } from "../sites/registry.js";
+import type { SiteAdapter } from "../sites/types.js";
+import { setBlur } from "./cosmetics.js";
 
 /**
- * Fallback sampling cadence. Title mutations trigger an immediate sample,
- * so this interval only bounds how stale the widget-based signals can get.
+ * Fallback sampling cadence. Adapter observers trigger immediate samples,
+ * so this interval only bounds detection latency when an observer is lost.
  */
 const SAMPLE_INTERVAL_MS = 1_000;
 
-const detector = new AdDetector();
-
-function readSnapshotSafe(): PlayerSnapshot {
-  try {
-    return readSnapshot(document);
-  } catch {
-    // A DOM read should never throw; if one does, report total blindness
-    // and let the core's fail-open watchdog handle a stuck mute.
-    return { title: null, trackLinkPresent: null, adMarkerPresent: null };
-  }
-}
-
-function sample(): void {
-  const verdict = judge(readSnapshotSafe());
-  const transition: Transition | null = detector.push(verdict, Date.now());
-  if (transition === null) return;
-
-  const message: AdStateMessage = {
-    kind: "ad-state",
-    inAd: transition === "ad-started",
-  };
-  // The promise rejects if the extension was reloaded out from under this
-  // page ("context invalidated") — nothing to do but stay quiet.
-  void api.runtime.sendMessage(message).catch(() => undefined);
-}
-
-// Title flips are the fastest ad-start signal — sample the instant one lands.
-const titleElement = document.querySelector("title");
-if (titleElement !== null) {
-  new MutationObserver(sample).observe(titleElement, {
-    childList: true,
-    characterData: true,
-    subtree: true,
+function run(adapter: SiteAdapter): void {
+  const detector = new AdDetector();
+  let settings: Settings = DEFAULT_SETTINGS;
+  void getSettings().then((loaded) => {
+    settings = loaded;
+    applyCosmetics();
   });
+  onSettingsChanged((changed) => {
+    settings = changed;
+    applyCosmetics();
+  });
+
+  function applyCosmetics(): void {
+    setBlur(
+      document,
+      adapter.cosmeticTargets(document),
+      detector.inAd && settings.enabled && settings.blurAds,
+    );
+  }
+
+  function sample(): void {
+    let verdict: Verdict;
+    try {
+      verdict = adapter.readVerdict(document);
+    } catch {
+      // A DOM read should never throw; if one does, report blindness and
+      // let the core's fail-open watchdog handle a stuck mute.
+      verdict = "unknown";
+    }
+    const transition = detector.push(verdict, Date.now());
+    applyCosmetics();
+    if (transition === null) return;
+
+    const message: AdStateMessage = {
+      kind: "ad-state",
+      inAd: transition === "ad-started",
+    };
+    // The promise rejects if the extension was reloaded out from under this
+    // page ("context invalidated") — nothing to do but stay quiet.
+    void api.runtime.sendMessage(message).catch(() => undefined);
+  }
+
+  adapter.observe(document, sample);
+  setInterval(sample, SAMPLE_INTERVAL_MS);
+  sample();
 }
 
-setInterval(sample, SAMPLE_INTERVAL_MS);
-sample();
+const adapter = adapterFor(location.hostname);
+if (adapter !== null) run(adapter);

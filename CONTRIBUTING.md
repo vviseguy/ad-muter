@@ -26,10 +26,11 @@ Everything else:
 - **Core stays pure.** `src/core/` gets no browser APIs, no DOM, no clocks;
   time comes in as a parameter. If you're reaching for a mock, the code is
   in the wrong layer.
-- **DOM assumptions live in one file** — `src/content/selectors.ts`.
+- **DOM assumptions live in one file per site** — `src/sites/<site>/selectors.ts`.
   Selector changes need the verification recipe from
   [docs/DETECTION.md](docs/DETECTION.md) run against the live player, with
-  the observed values in the PR description.
+  the observed values in the PR description. New sites are one directory
+  under `src/sites/` plus their origin in the manifest and its guard.
 - **Fail open.** Any new detection logic must preserve the invariant: a bug
   may cost the user a muted moment, never a stuck-muted tab.
 - **New behavior, new test.** The detector and judge are cheap to test —

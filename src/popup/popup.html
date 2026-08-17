@@ -74,6 +74,16 @@
       .switch input:checked + span::after {
         transform: translateX(16px);
       }
+      .row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 10px;
+      }
+      .row label:first-child {
+        color: var(--fg-soft);
+      }
       #status {
         margin: 10px 0 0;
         color: var(--fg-soft);
@@ -92,6 +102,13 @@
         <span></span>
       </label>
     </header>
+    <div class="row">
+      <label for="blur">Blur ads</label>
+      <label class="switch">
+        <input id="blur" type="checkbox" />
+        <span></span>
+      </label>
+    </div>
     <p id="status">…</p>
     <script src="popup.js"></script>
   </body>

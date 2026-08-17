@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { judge } from "../src/core/judge.js";
-import type { PlayerSnapshot } from "../src/core/snapshot.js";
+import { judge } from "../src/sites/spotify/judge.js";
+import type { PlayerSnapshot } from "../src/sites/spotify/snapshot.js";
 
 const snapshot = (overrides: Partial<PlayerSnapshot>): PlayerSnapshot => ({
   title: null,
@@ -9,7 +9,7 @@ const snapshot = (overrides: Partial<PlayerSnapshot>): PlayerSnapshot => ({
   ...overrides,
 });
 
-describe("judge", () => {
+describe("spotify judge", () => {
   it("returns unknown when nothing is readable", () => {
     expect(judge(snapshot({}))).toBe("unknown");
   });

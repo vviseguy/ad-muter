@@ -1,27 +1,37 @@
 # Architecture
 
-Three layers with one-way data flow. Each layer has exactly one
-responsibility and one seam to the next.
+Layers with one-way data flow. Each layer has exactly one responsibility
+and one seam to the next.
 
 | Layer | Files | Job | May touch |
 |---|---|---|---|
-| Read | `src/content/` | Turn the page into a `PlayerSnapshot` | DOM (read-only) |
-| Decide | `src/core/` | Turn snapshots into ad-state transitions | Nothing — pure |
-| Act | `src/background/` | Turn transitions into tab mute/unmute | Extension APIs |
+| Read | `src/sites/<site>/` | Turn one player's page into `Verdict`s | DOM (read-only) |
+| Decide | `src/core/` | Smooth verdicts into ad-state transitions | Nothing — pure |
+| Act (audio) | `src/background/` | Turn transitions into tab mute/unmute | Extension APIs |
+| Act (visual) | `src/content/cosmetics.ts` | Toggle the blur class during ads | DOM (one CSS class) |
 
-`src/shared/` holds the seams: the typed message protocol (`messages.ts`),
-the one setting (`settings.ts`), and the two-line cross-browser API shim
-(`api.ts`).
+`src/content/index.ts` is the loop wiring read → decide → act. `src/sites/`
+holds one adapter per player (see `types.ts` for the contract — adding a
+site is one directory plus a registry line plus its origin in the manifest
+and guard). `src/shared/` holds the seams: the typed message protocol
+(`messages.ts`), the two settings (`settings.ts`), and the two-line
+cross-browser API shim (`api.ts`).
 
 ## Rules that keep the layers honest
 
 - **Core is pure.** No browser APIs, no DOM, no `Date.now()` — callers pass
   the clock in. Every behavior, including watchdog timing, is unit-tested
   without mocks.
-- **The content script never acts.** It cannot mute anything; it only reads
-  and reports. All authority lives in the background worker.
+- **Adapters read; they never act.** `readVerdict` is a pure DOM read;
+  adapters cannot mute or modify anything. They *declare* blur targets;
+  applying them is the loop's job.
+- **The content script never touches audio or the network.** Its one write
+  to the page is cosmetic: toggling the blur class on adapter-declared
+  elements, gated by the settings, driven by the same transitions that
+  drive muting (fail-open watchdog included). All *audio* authority lives
+  in the background worker.
 - **The background worker never reads the page.** It knows nothing about
-  Spotify's DOM; it receives `{ inAd: boolean }` and manages tab state.
+  any player's DOM; it receives `{ inAd: boolean }` and manages tab state.
 - **Every runtime message is typed** in `shared/messages.ts`. There are two.
 
 ## Muting: why the tab-mute API
@@ -56,7 +66,8 @@ muted moment* — never a stuck-muted tab, never broken playback.
 
 | Failure | Outcome |
 |---|---|
-| Selectors break (player redesign) | Verdicts go `unknown`; state never flips on a guess. If it happens mid-ad, the core's watchdog unmutes after 15s of blindness. |
+| Selectors break (player redesign) | Verdicts go `unknown`; state never flips on a guess. If it happens mid-ad, the core's watchdog unmutes — and unblurs — after 15s of blindness. |
+| Player re-renders mid-ad (blurred element replaced) | Blur is re-applied idempotently every sample to the adapter's *current* targets; stale elements lose the class. |
 | Service worker suspended mid-break | The next content-script message wakes it; `storage.session` still has the bookkeeping. |
 | Extension reloaded/updated under an open tab | Orphaned content script's messages fail silently; a still-muted tab is one click on the tab-strip speaker icon. |
 | Browser restart with a muted tab restored | Session bookkeeping is gone; same one-click recovery, and the next ad cycle re-syncs. |

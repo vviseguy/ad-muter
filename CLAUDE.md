@@ -1,24 +1,28 @@
 # ad-muter
 
-Browser extension (MV3, TypeScript) that mutes the tab during ad breaks on
-open.spotify.com. Mute-only by design: no blocking, no interception, no
-network access — that posture is the product.
+Browser extension (MV3, TypeScript) that mutes the tab (and optionally
+blurs the player) during ad breaks on open.spotify.com and www.youtube.com.
+Mute-only by design: no blocking, no interception, no network access — that
+posture is the product.
 
 ## Map
 
-- `src/core/` — pure detection logic (no browser APIs; clock passed in)
-- `src/content/` — DOM reading only; all selectors in `selectors.ts`
-- `src/background/` — the only layer that acts (tab-mute API)
+- `src/core/` — pure detection smoothing (no browser APIs; clock passed in)
+- `src/sites/<site>/` — one adapter per player; DOM assumptions only in each `selectors.ts`
+- `src/content/` — the loop (index.ts) + blur cosmetics (cosmetics.ts)
+- `src/background/` — sole audio authority (tab-mute API)
 - `src/shared/` — message protocol, settings, browser shim
 - `manifest/base.json` + `scripts/build.mjs` — one base, per-browser overlays
 - `tests/guards.test.ts` — pins zero-network + frozen permissions; CI fails if violated
 
 ## Contracts (do not relax without explicit decision)
 
-- Permissions are frozen: `storage` + content script on open.spotify.com only.
+- Permissions are frozen: `storage` + content scripts on the two origins only.
+  New site = new adapter dir + registry line + manifest origin + guard edit.
 - No network APIs anywhere in `src/`.
+- Content script's only page write is the blur class (cosmetics.ts).
 - Core stays pure; new guards need a negative test.
-- Fail open: detection bugs may never leave a tab stuck muted.
+- Fail open: detection bugs may never leave a tab stuck muted or blurred.
 
 ## Workflow
 

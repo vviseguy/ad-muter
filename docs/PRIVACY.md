@@ -23,10 +23,11 @@ Privacy policies are usually promises. This one is a build constraint:
 
 ## What the extension can see
 
-- On `open.spotify.com` only: the tab title and the now-playing bar's DOM —
-  the three facts in `src/core/snapshot.ts`. It cannot see any other site,
-  your history, or even the Spotify tab's URL (reading tab URLs requires the
-  `tabs` permission, which it does not request).
+- On `open.spotify.com` and `www.youtube.com` only: the handful of on-screen
+  facts each site adapter reads (`src/sites/*/selectors.ts` is the complete
+  list). It cannot see any other site, your history, or even the tab's URL
+  (reading tab URLs requires the `tabs` permission, which it does not
+  request).
 
 ## What it stores
 

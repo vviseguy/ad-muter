@@ -1,4 +1,5 @@
-import type { PlayerSnapshot, Verdict } from "./snapshot.js";
+import type { Verdict } from "../../core/verdict.js";
+import type { PlayerSnapshot } from "./snapshot.js";
 
 /**
  * Ad titles observed on the web player start with the word "Advertisement".

@@ -1,26 +1,42 @@
 import { api } from "./api.js";
 
 /**
- * User settings. There is exactly one: the on/off switch.
- * Stored in `storage.sync` so it follows the user's browser profile.
+ * User settings, stored in `storage.sync` so they follow the browser
+ * profile. Missing keys resolve to the defaults: the extension works out
+ * of the box and new settings never surprise existing users with "off".
  */
-const ENABLED_KEY = "enabled";
-
-/** Missing key counts as enabled: the extension works out of the box. */
-export async function isEnabled(): Promise<boolean> {
-  const stored = await api.storage.sync.get(ENABLED_KEY);
-  return stored[ENABLED_KEY] !== false;
+export interface Settings {
+  /** Master switch. When off, nothing is muted and nothing is blurred. */
+  readonly enabled: boolean;
+  /** Blur the player's visuals while an ad plays. */
+  readonly blurAds: boolean;
 }
 
-export async function setEnabled(value: boolean): Promise<void> {
-  await api.storage.sync.set({ [ENABLED_KEY]: value });
+export const DEFAULT_SETTINGS: Settings = { enabled: true, blurAds: true };
+
+const KEYS = Object.keys(DEFAULT_SETTINGS);
+
+export async function getSettings(): Promise<Settings> {
+  const stored = await api.storage.sync.get(KEYS);
+  return {
+    enabled: stored["enabled"] !== false,
+    blurAds: stored["blurAds"] !== false,
+  };
 }
 
-export function onEnabledChanged(callback: (enabled: boolean) => void): void {
+export async function setSetting(
+  key: keyof Settings,
+  value: boolean,
+): Promise<void> {
+  await api.storage.sync.set({ [key]: value });
+}
+
+export function onSettingsChanged(
+  callback: (settings: Settings) => void,
+): void {
   api.storage.onChanged.addListener((changes, area) => {
-    const change = changes[ENABLED_KEY];
-    if (area === "sync" && change !== undefined) {
-      callback(change.newValue !== false);
-    }
+    if (area !== "sync") return;
+    if (!KEYS.some((key) => key in changes)) return;
+    void getSettings().then(callback);
   });
 }
