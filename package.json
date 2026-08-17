@@ -1,6 +1,6 @@
 {
   "name": "ad-muter",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "private": true,
   "description": "Browser extension that mutes the tab (and optionally blurs the player) during ad breaks in supported web players. No blocking, no tracking, no network access.",
   "license": "MIT OR Apache-2.0",
