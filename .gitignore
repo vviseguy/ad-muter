@@ -1,0 +1,4 @@
+node_modules/
+dist/
+# Icons are build outputs of scripts/gen-icons.mjs, not checked-in binaries.
+assets/

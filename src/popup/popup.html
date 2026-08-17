@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      :root {
+        color-scheme: light dark;
+        --fg: #0f172a;
+        --fg-soft: #64748b;
+        --accent: #0d9488;
+        --muting: #b91c1c;
+        --track: #cbd5e1;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --fg: #f8fafc;
+          --fg-soft: #94a3b8;
+          --track: #475569;
+        }
+      }
+      body {
+        margin: 0;
+        padding: 14px 16px;
+        min-width: 220px;
+        font: 13px/1.4 system-ui, sans-serif;
+        color: var(--fg);
+      }
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      h1 {
+        margin: 0;
+        font-size: 13px;
+        font-weight: 600;
+      }
+      /* The toggle is a styled checkbox — no framework, no JS state. */
+      .switch {
+        position: relative;
+        width: 36px;
+        height: 20px;
+        flex: none;
+      }
+      .switch input {
+        position: absolute;
+        inset: 0;
+        margin: 0;
+        opacity: 0;
+        cursor: pointer;
+      }
+      .switch span {
+        display: block;
+        height: 100%;
+        border-radius: 10px;
+        background: var(--track);
+        transition: background 0.15s;
+      }
+      .switch span::after {
+        content: "";
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #fff;
+        transition: transform 0.15s;
+      }
+      .switch input:checked + span {
+        background: var(--accent);
+      }
+      .switch input:checked + span::after {
+        transform: translateX(16px);
+      }
+      #status {
+        margin: 10px 0 0;
+        color: var(--fg-soft);
+      }
+      #status.muting {
+        color: var(--muting);
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Ad Muter</h1>
+      <label class="switch">
+        <input id="enabled" type="checkbox" />
+        <span></span>
+      </label>
+    </header>
+    <p id="status">…</p>
+    <script src="popup.js"></script>
+  </body>
+</html>
