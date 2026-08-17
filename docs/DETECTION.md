@@ -70,6 +70,11 @@ navigation).
 Blur target: `video.html5-main-video` only — deliberately not the player
 container, so controls and the **Skip** button stay crisp and clickable.
 
+Skippability: the Skip button (`.ytp-skip-ad-button`, older
+`.ytp-ad-skip-button`) is mounted when the ad becomes skippable — presence
+is the signal, checked per sample, announced once per break on its rising
+edge. This only rings the chime; the extension never clicks the button.
+
 **Verification status**: authored August 2026 against the standard watch
 player. Shorts and embedded players are out of scope for now.
 

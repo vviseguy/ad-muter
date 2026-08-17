@@ -54,6 +54,43 @@ async function buildStatus(tabId: number | null): Promise<StatusReply> {
   };
 }
 
+/**
+ * Play the "skippable now" chime — a bundled, generated WAV; nothing is
+ * fetched. The ad tab is muted, so the sound must come from the extension:
+ * on Chrome that's an offscreen document (service workers have no audio);
+ * on Firefox the background event page has a DOM and plays it directly.
+ */
+const offscreenApi: typeof chrome.offscreen | undefined = (
+  api as Partial<typeof chrome>
+).offscreen;
+
+async function ensureOffscreenDocument(): Promise<void> {
+  try {
+    await offscreenApi!.createDocument({
+      url: "offscreen.html",
+      reasons: [offscreenApi!.Reason.AUDIO_PLAYBACK],
+      justification:
+        "Play a short bundled chime when an ad becomes skippable; the ad tab itself is muted.",
+    });
+  } catch {
+    // Document already exists — fine.
+  }
+}
+
+async function playChime(): Promise<void> {
+  const settings = await getSettings();
+  if (!settings.enabled || !settings.chimeOnSkip) return;
+
+  if (offscreenApi === undefined) {
+    void new Audio(api.runtime.getURL("chime.wav")).play().catch(() => undefined);
+    return;
+  }
+  await ensureOffscreenDocument();
+  void api.runtime
+    .sendMessage({ kind: "play-chime" } satisfies Message)
+    .catch(() => undefined);
+}
+
 /** Release every mute we hold (used when the user switches the extension off). */
 async function releaseAllMutes(): Promise<void> {
   const stored = await api.storage.session.get(null);
@@ -72,6 +109,10 @@ api.runtime.onMessage.addListener(
       if (tabId !== undefined) {
         void handleAdState(tabId, message.inAd).catch(() => undefined);
       }
+      return undefined;
+    }
+    if (message.kind === "skip-available") {
+      void playChime().catch(() => undefined);
       return undefined;
     }
     if (message.kind === "get-status") {

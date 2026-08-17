@@ -16,7 +16,7 @@
 import { AdDetector } from "../core/detector.js";
 import type { Verdict } from "../core/verdict.js";
 import { api } from "../shared/api.js";
-import type { AdStateMessage } from "../shared/messages.js";
+import type { AdStateMessage, SkipAvailableMessage } from "../shared/messages.js";
 import {
   DEFAULT_SETTINGS,
   getSettings,
@@ -35,6 +35,8 @@ const SAMPLE_INTERVAL_MS = 1_000;
 
 function run(adapter: SiteAdapter): void {
   const detector = new AdDetector();
+  /** One chime per ad break: reset when a break starts. */
+  let chimedThisBreak = false;
   let settings: Settings = DEFAULT_SETTINGS;
   void getSettings().then((loaded) => {
     settings = loaded;
@@ -64,6 +66,8 @@ function run(adapter: SiteAdapter): void {
     }
     const transition = detector.push(verdict, Date.now());
     applyCosmetics();
+    if (transition === "ad-started") chimedThisBreak = false;
+    maybeAnnounceSkip();
     if (transition === null) return;
 
     const message: AdStateMessage = {
@@ -72,6 +76,16 @@ function run(adapter: SiteAdapter): void {
     };
     // The promise rejects if the extension was reloaded out from under this
     // page ("context invalidated") — nothing to do but stay quiet.
+    void api.runtime.sendMessage(message).catch(() => undefined);
+  }
+
+  // Rising edge only: announce the moment a skip becomes possible, once per
+  // break. The background decides whether to chime (settings live there).
+  function maybeAnnounceSkip(): void {
+    if (!detector.inAd || chimedThisBreak) return;
+    if (adapter.canSkip?.(document) !== true) return;
+    chimedThisBreak = true;
+    const message: SkipAvailableMessage = { kind: "skip-available" };
     void api.runtime.sendMessage(message).catch(() => undefined);
   }
 

@@ -17,12 +17,17 @@ posture is the product.
 
 ## Contracts (do not relax without explicit decision)
 
-- Permissions are frozen: `storage` + content scripts on the two origins only.
+- Permissions are frozen per target: chrome = storage+offscreen (chime),
+  firefox = storage; content scripts on the two origins only.
   New site = new adapter dir + registry line + manifest origin + guard edit.
 - No network APIs anywhere in `src/`.
 - Content script's only page write is the blur class (cosmetics.ts).
+- NEVER click player controls (no auto-skip — Jacob decided 08-17; the
+  chime announces skippability instead). canSkip is a read.
 - Core stays pure; new guards need a negative test.
 - Fail open: detection bugs may never leave a tab stuck muted or blurred.
+- Generated assets (icons, chime.wav) are build outputs of scripts/gen-*.mjs
+  with container tests in tests/assets.test.ts — never check in binaries.
 
 ## Workflow
 

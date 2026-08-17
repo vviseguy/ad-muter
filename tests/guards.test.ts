@@ -80,13 +80,24 @@ describe("guard: frozen permission surface", () => {
     ]);
   });
 
-  it("no browser target adds permissions on top of the base", async () => {
+  it("each browser target's permissions are exactly the pinned set", async () => {
     const base = JSON.parse(
       await readFile(join(ROOT, "manifest", "base.json"), "utf8"),
     );
+    // Chrome additionally gets "offscreen": MV3 service workers cannot play
+    // audio, so the skip chime plays from an offscreen document. It grants
+    // no data access and shows no install warning. Firefox's background
+    // event page has a DOM, plays the chime itself, and stays storage-only.
+    const pinned = {
+      chrome: ["storage", "offscreen"],
+      firefox: ["storage"],
+    };
+    expect(Object.keys(pinned).sort()).toEqual([...TARGETS].sort());
     for (const target of TARGETS) {
       const manifest = makeManifest(base, target);
-      expect(manifest.permissions, target).toEqual(base.permissions);
+      expect(manifest.permissions, target).toEqual(
+        pinned[target as keyof typeof pinned],
+      );
       expect(manifest.host_permissions, target).toBeUndefined();
       expect(manifest.content_scripts, target).toEqual(base.content_scripts);
     }

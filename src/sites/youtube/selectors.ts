@@ -18,4 +18,11 @@ export const SELECTORS = {
    * player: controls and the ad skip button must stay crisp and clickable.
    */
   video: "video.html5-main-video",
+
+  /**
+   * The ad skip button, old and new class names. YouTube mounts it when the
+   * ad becomes skippable, so presence is the signal. If a player variant is
+   * ever seen pre-mounting it hidden, refine this to a visibility check.
+   */
+  skipButton: ".ytp-skip-ad-button, .ytp-ad-skip-button",
 } as const;

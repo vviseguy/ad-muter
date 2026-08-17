@@ -12,6 +12,7 @@
 import { build } from "esbuild";
 import { cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
+import { renderChimeWav } from "./gen-chime.mjs";
 import { renderIconPng } from "./gen-icons.mjs";
 
 const root = new URL("..", import.meta.url);
@@ -23,7 +24,15 @@ export const TARGETS = ["chrome", "firefox"];
 export function makeManifest(base, target) {
   switch (target) {
     case "chrome":
-      return { ...base, background: { service_worker: "background.js" } };
+      return {
+        ...base,
+        background: { service_worker: "background.js" },
+        // Chrome-only: an offscreen document plays the skip chime, because
+        // MV3 service workers cannot play audio and the ad tab is muted.
+        // Firefox's background event page has a DOM and needs no extra
+        // permission. This is pinned per-target by the guard tests.
+        permissions: [...base.permissions, "offscreen"],
+      };
     case "firefox":
       return {
         ...base,
@@ -51,20 +60,29 @@ async function main() {
     const out = (relative) => path(`dist/${target}/${relative}`);
     await mkdir(out("icons"), { recursive: true });
 
+    const entryPoints = {
+      content: path("src/content/index.ts"),
+      background: path("src/background/index.ts"),
+      popup: path("src/popup/popup.ts"),
+    };
+    if (target === "chrome") {
+      entryPoints.offscreen = path("src/offscreen/offscreen.ts");
+    }
+
     await build({
-      entryPoints: {
-        content: path("src/content/index.ts"),
-        background: path("src/background/index.ts"),
-        popup: path("src/popup/popup.ts"),
-      },
+      entryPoints,
       outdir: out(""),
       bundle: true,
-      format: "iife", // content scripts cannot be modules; keep all three uniform
+      format: "iife", // content scripts cannot be modules; keep all entries uniform
       target: ["chrome110", "firefox121"],
       logLevel: "silent",
     });
 
     await cp(path("src/popup/popup.html"), out("popup.html"));
+    if (target === "chrome") {
+      await cp(path("src/offscreen/offscreen.html"), out("offscreen.html"));
+    }
+    await writeFile(out("chime.wav"), renderChimeWav());
     await writeFile(
       out("manifest.json"),
       JSON.stringify(makeManifest(base, target), null, 2) + "\n",

@@ -25,6 +25,9 @@ export const youtubeAdapter: SiteAdapter = {
     return video === null ? [] : [video];
   },
 
+  // The Skip button is mounted when the ad becomes skippable.
+  canSkip: (doc) => doc.querySelector(SELECTORS.skipButton) !== null,
+
   // Fast path: watch the player's class attribute — `ad-showing` appearing
   // or vanishing is the transition itself. The player may not exist yet on
   // a fresh SPA navigation, so retry the attach until it does; the shared

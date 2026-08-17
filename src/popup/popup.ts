@@ -8,8 +8,14 @@ import { getSettings, setSetting } from "../shared/settings.js";
 
 const enabledToggle = document.querySelector<HTMLInputElement>("#enabled");
 const blurToggle = document.querySelector<HTMLInputElement>("#blur");
+const chimeToggle = document.querySelector<HTMLInputElement>("#chime");
 const status = document.querySelector<HTMLParagraphElement>("#status");
-if (enabledToggle === null || blurToggle === null || status === null) {
+if (
+  enabledToggle === null ||
+  blurToggle === null ||
+  chimeToggle === null ||
+  status === null
+) {
   throw new Error("popup markup missing");
 }
 
@@ -30,6 +36,7 @@ async function render(): Promise<void> {
 
   enabledToggle!.checked = settings.enabled;
   blurToggle!.checked = settings.blurAds;
+  chimeToggle!.checked = settings.chimeOnSkip;
   if (!settings.enabled) {
     status!.textContent = "Off — ads play at full volume.";
     status!.className = "";
@@ -47,6 +54,9 @@ enabledToggle.addEventListener("change", () => {
 });
 blurToggle.addEventListener("change", () => {
   void setSetting("blurAds", blurToggle!.checked).then(render);
+});
+chimeToggle.addEventListener("change", () => {
+  void setSetting("chimeOnSkip", chimeToggle!.checked).then(render);
 });
 
 void render();

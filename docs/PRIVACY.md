@@ -19,7 +19,12 @@ Privacy policies are usually promises. This one is a build constraint:
   The same guard test pins this; a PR that adds a permission fails CI until
   it also rewrites the guard — visibly, in the diff.
 - **No remote code** — Manifest V3 forbids it, and with no network access
-  there is nothing to load it with.
+  there is nothing to load it with. The skip chime is a WAV file
+  synthesized at build time and bundled with the extension.
+- **`offscreen` (Chrome only)** exists to play that bundled chime, because
+  the ad tab is muted and MV3 service workers cannot play audio. It grants
+  no access to any page or data and shows no install warning; the offscreen
+  page's entire code is a dozen lines in `src/offscreen/offscreen.ts`.
 
 ## What the extension can see
 

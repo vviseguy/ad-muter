@@ -6,13 +6,19 @@ import { api } from "./api.js";
  * of the box and new settings never surprise existing users with "off".
  */
 export interface Settings {
-  /** Master switch. When off, nothing is muted and nothing is blurred. */
+  /** Master switch. When off, nothing is muted, blurred, or chimed. */
   readonly enabled: boolean;
   /** Blur the player's visuals while an ad plays. */
   readonly blurAds: boolean;
+  /** Play a short local chime when an ad becomes skippable. */
+  readonly chimeOnSkip: boolean;
 }
 
-export const DEFAULT_SETTINGS: Settings = { enabled: true, blurAds: true };
+export const DEFAULT_SETTINGS: Settings = {
+  enabled: true,
+  blurAds: true,
+  chimeOnSkip: true,
+};
 
 const KEYS = Object.keys(DEFAULT_SETTINGS);
 
@@ -21,6 +27,7 @@ export async function getSettings(): Promise<Settings> {
   return {
     enabled: stored["enabled"] !== false,
     blurAds: stored["blurAds"] !== false,
+    chimeOnSkip: stored["chimeOnSkip"] !== false,
   };
 }
 

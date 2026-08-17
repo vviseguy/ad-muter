@@ -31,4 +31,12 @@ export interface SiteAdapter {
    * a lost observer degrades latency, never correctness.
    */
   observe(doc: Document, onSignal: () => void): void;
+
+  /**
+   * Optional: whether the current ad can be skipped by the user right now
+   * (e.g. YouTube's Skip button has appeared). Pure DOM read. Sites whose
+   * ads are never skippable simply omit this. Used only to *notify* the
+   * user — this extension never clicks anything on their behalf.
+   */
+  canSkip?(doc: Document): boolean;
 }

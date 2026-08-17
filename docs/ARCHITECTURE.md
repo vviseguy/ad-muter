@@ -5,10 +5,11 @@ and one seam to the next.
 
 | Layer | Files | Job | May touch |
 |---|---|---|---|
-| Read | `src/sites/<site>/` | Turn one player's page into `Verdict`s | DOM (read-only) |
+| Read | `src/sites/<site>/` | Turn one player's page into `Verdict`s (+ skippability) | DOM (read-only) |
 | Decide | `src/core/` | Smooth verdicts into ad-state transitions | Nothing — pure |
-| Act (audio) | `src/background/` | Turn transitions into tab mute/unmute | Extension APIs |
+| Act (audio) | `src/background/` | Turn transitions into tab mute/unmute; play the skip chime | Extension APIs |
 | Act (visual) | `src/content/cosmetics.ts` | Toggle the blur class during ads | DOM (one CSS class) |
+| Chime host | `src/offscreen/` (Chrome only) | Play chime.wav on request — its entire job | Audio playback |
 
 `src/content/index.ts` is the loop wiring read → decide → act. `src/sites/`
 holds one adapter per player (see `types.ts` for the contract — adding a
@@ -32,7 +33,21 @@ cross-browser API shim (`api.ts`).
   in the background worker.
 - **The background worker never reads the page.** It knows nothing about
   any player's DOM; it receives `{ inAd: boolean }` and manages tab state.
-- **Every runtime message is typed** in `shared/messages.ts`. There are two.
+- **The extension never clicks the page.** Skippability is *announced* (the
+  chime), never *acted on*. `canSkip` is a read; there is deliberately no
+  code path that presses a player control.
+- **Every runtime message is typed** in `shared/messages.ts`. There are four.
+
+## The chime, and why it needs an extra context
+
+The ad tab is muted — by us — so the "you can skip now" chime cannot play
+from the tab. It plays from the extension itself: on Chrome via an
+offscreen document (`src/offscreen/`, the `offscreen` permission; MV3
+service workers have no audio), on Firefox directly from the background
+event page (which has a DOM; no extra permission). One chime per ad break,
+on the rising edge of `canSkip`, gated by the `chimeOnSkip` setting in the
+background. The sound itself is `chime.wav`, synthesized at build time by
+`scripts/gen-chime.mjs` — generated, not fetched, not checked in.
 
 ## Muting: why the tab-mute API
 

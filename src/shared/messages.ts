@@ -10,6 +10,16 @@ export interface AdStateMessage {
   readonly inAd: boolean;
 }
 
+/** Content → background: the current ad just became user-skippable. */
+export interface SkipAvailableMessage {
+  readonly kind: "skip-available";
+}
+
+/** Background → offscreen document (Chrome only): play the chime. */
+export interface PlayChimeMessage {
+  readonly kind: "play-chime";
+}
+
 /** Popup → background: describe the given tab. */
 export interface GetStatusMessage {
   readonly kind: "get-status";
@@ -23,4 +33,8 @@ export interface StatusReply {
   readonly mutedByUs: boolean;
 }
 
-export type Message = AdStateMessage | GetStatusMessage;
+export type Message =
+  | AdStateMessage
+  | SkipAvailableMessage
+  | PlayChimeMessage
+  | GetStatusMessage;

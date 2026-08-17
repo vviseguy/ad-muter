@@ -93,6 +93,18 @@ describe("youtube adapter", () => {
     expect(targets).toHaveLength(1);
     expect(targets[0]?.tagName).toBe("VIDEO");
   });
+
+  it("reports skippability from the skip button, old and new class names", () => {
+    expect(youtubeAdapter.canSkip?.(document)).toBe(false);
+    document.body.innerHTML = `<button class="ytp-skip-ad-button">Skip</button>`;
+    expect(youtubeAdapter.canSkip?.(document)).toBe(true);
+    document.body.innerHTML = `<button class="ytp-ad-skip-button">Skip</button>`;
+    expect(youtubeAdapter.canSkip?.(document)).toBe(true);
+  });
+
+  it("spotify has no skip concept — audio ads are unskippable", () => {
+    expect(spotifyAdapter.canSkip).toBeUndefined();
+  });
 });
 
 describe("cosmetics", () => {

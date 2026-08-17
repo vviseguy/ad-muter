@@ -15,6 +15,7 @@ nothing is blocked, intercepted, modified, or sent anywhere.
 | ✅ Detects ad breaks from what the player already shows on screen | ❌ No request blocking or filtering |
 | ✅ Mutes the tab with the browser's own tab-mute control | ❌ No network traffic interception |
 | ✅ Optionally blurs the player's visuals during the break (skip buttons stay crisp and clickable) | ❌ No client modification or premium spoofing |
+| ✅ Optionally chimes when an ad becomes skippable — so you can look up and click Skip | ❌ No auto-skip: it never clicks anything for you (see FAQ) |
 | ✅ Unmutes when the break ends — never touching a mute *you* set | ❌ No analytics, telemetry, or error reporting — **zero network access** |
 
 ## Permissions
@@ -25,7 +26,8 @@ The complete permission surface, with rationale. This table is enforced by
 | Grant | Why |
 |---|---|
 | Content script on `https://open.spotify.com/*` and `https://www.youtube.com/*` | Read each player's on-screen state. The extension cannot see any other site. |
-| `storage` | Remember the two toggles, and track which tabs *we* muted so we never unmute one *you* muted. |
+| `storage` | Remember the toggles, and track which tabs *we* muted so we never unmute one *you* muted. |
+| `offscreen` (Chrome only) | Play the bundled skip chime. The ad tab is muted, so the sound comes from an offscreen extension page; this permission grants no data access and shows no install warning. Firefox plays the chime from its background page and doesn't need it. |
 
 That's all of it. No `tabs`, no `<all_urls>`, no `webRequest`, no
 `declarativeNetRequest`, no remote code. The same test suite also scans every
@@ -111,6 +113,16 @@ happens at the browser level, outside the page. (A page can still infer
 output muting through browser APIs if it goes looking; no tool can promise
 invisibility. See the honest version of this answer in
 [docs/PRIVACY.md](docs/PRIVACY.md).)
+
+**Why chime instead of auto-skipping the ad?**
+Because the click is the line. Everything this extension does is on the
+listener's side of the glass: what reaches your ears and eyes. The moment it
+presses a player's controls for you, it becomes an agent interacting with
+the ad system itself — synthesizing engagement signals, altering what
+advertisers are billed for, and joining the tool category that stores
+remove. The chime keeps the human as the actor: you hear it, you decide,
+one click. (The skip chime is a generated WAV bundled at build time —
+nothing is fetched.)
 
 **Does it collect anything?**
 It cannot. There is no code path to the network — enforced by tests, in a
