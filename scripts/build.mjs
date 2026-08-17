@@ -53,7 +53,13 @@ export function makeManifest(base, target) {
 }
 
 async function main() {
-  const base = JSON.parse(await readFile(path("manifest/base.json"), "utf8"));
+  // The version lives in package.json alone; the manifest gets stamped at
+  // build time so the two can never drift (`npm version` bumps everything).
+  const pkg = JSON.parse(await readFile(path("package.json"), "utf8"));
+  const base = {
+    ...JSON.parse(await readFile(path("manifest/base.json"), "utf8")),
+    version: pkg.version,
+  };
   await rm(path("dist"), { recursive: true, force: true });
 
   for (const target of TARGETS) {

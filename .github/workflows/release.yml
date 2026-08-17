@@ -1,0 +1,24 @@
+# Tag-triggered releases: `npm version minor && git push --follow-tags`
+# runs full CI, packages both browser targets as deterministic zips, and
+# attaches them to a GitHub Release. One lean job, tags only.
+name: release
+on:
+  push:
+    tags: ["v*"]
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run ci
+      - run: node scripts/zip.mjs
+      - run: gh release create "$GITHUB_REF_NAME" dist/*.zip --title "$GITHUB_REF_NAME" --generate-notes
+        env:
+          GH_TOKEN: ${{ github.token }}

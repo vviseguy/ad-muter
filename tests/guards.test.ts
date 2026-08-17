@@ -105,6 +105,17 @@ describe("guard: frozen permission surface", () => {
     }
   });
 
+  it("the version is single-sourced from package.json", async () => {
+    const base = JSON.parse(
+      await readFile(join(ROOT, "manifest", "base.json"), "utf8"),
+    );
+    const pkg = JSON.parse(await readFile(join(ROOT, "package.json"), "utf8"));
+    // base.json must NOT carry a version: the build stamps package.json's in,
+    // so `npm version` is the one bump and the two can never drift.
+    expect(base.version).toBeUndefined();
+    expect(pkg.version).toMatch(/^\d+\.\d+\.\d+$/);
+  });
+
   it("manifest origins, the supported-site list, and adapters agree", async () => {
     const base = JSON.parse(
       await readFile(join(ROOT, "manifest", "base.json"), "utf8"),

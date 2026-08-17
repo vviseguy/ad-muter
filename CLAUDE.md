@@ -35,6 +35,9 @@ posture is the product.
 ## Workflow
 
 - `npm run ci` (typecheck + test + build) before pushing.
+- Version single-sourced in package.json (base.json has none — guard-pinned);
+  release = `npm version minor && git push --follow-tags` → release.yml
+  attaches deterministic zips (scripts/zip.mjs, dep-free writer).
 - Selector changes require the live-verification recipe in docs/DETECTION.md.
 - Never put "Spotify" in the extension `name` field or store listing title
   (trademark exposure — see README's trademark note).

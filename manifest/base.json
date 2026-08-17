@@ -1,7 +1,6 @@
 {
   "manifest_version": 3,
   "name": "Ad Muter",
-  "version": "0.4.0",
   "description": "Mutes the tab and blurs the player during ad breaks; chimes when an ad turns skippable. Nothing is blocked or sent anywhere.",
   "permissions": ["storage"],
   "content_scripts": [

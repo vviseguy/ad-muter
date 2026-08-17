@@ -37,6 +37,20 @@ Everything else:
   keep them fully covered. Guard-style rules should be enforced by a test,
   and every guard needs a negative case proving it can actually fail.
 
+## Releasing
+
+The version lives in `package.json` only — the build stamps it into each
+target's manifest (a guard test keeps `manifest/base.json` version-free).
+
+```
+npm version minor && git push --follow-tags
+```
+
+The tag triggers `release.yml`: full CI, then a GitHub Release with both
+zips attached. `npm run package` produces the same zips locally; they are
+deterministic (sorted entries, fixed timestamps), so a rebuilt release
+should diff clean against the published one.
+
 ## Reporting security issues
 
 Use GitHub's private vulnerability reporting on this repository rather than
