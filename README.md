@@ -1,4 +1,4 @@
-<h1 align="center">Ad Muter</h1>
+<h1 align="center"><img src="docs/img/icon.svg" width="88" alt="" /><br/>Ad Muter</h1>
 
 <p align="center"><b>Ads still play. Your speakers sit them out.</b></p>
 
@@ -7,6 +7,16 @@
   <img alt="network access: none" src="https://img.shields.io/badge/network_access-none-2ea043" />
   <img alt="permissions: 2" src="https://img.shields.io/badge/permissions-storage_+_offscreen-2ea043" />
   <img alt="license: MIT OR Apache-2.0" src="https://img.shields.io/badge/license-MIT_OR_Apache--2.0-blue" />
+</p>
+
+<p align="center">
+  <a href="https://github.com/vviseguy/ad-muter/releases/latest/download/ad-muter-chrome.zip"><img alt="Download for Chrome / Edge / Brave" src="https://img.shields.io/badge/⬇_Download-Chrome_·_Edge_·_Brave-1a73e8?style=for-the-badge" /></a>
+  &nbsp;
+  <a href="https://github.com/vviseguy/ad-muter/releases/latest/download/ad-muter-firefox.zip"><img alt="Download for Firefox" src="https://img.shields.io/badge/⬇_Download-Firefox-e66000?style=for-the-badge" /></a>
+</p>
+
+<p align="center">
+  <img src="docs/img/hero.svg" width="760" alt="During an ad break: the tab is muted and the player blurred while the Skip button stays crisp; a chime marks the ad turning skippable; the popup shows Enabled, Blur ads, and Chime toggles." />
 </p>
 
 A browser extension that **mutes the tab during ad breaks** on the Spotify
@@ -54,8 +64,12 @@ never the interception category that gets tools removed from stores.
 
 ## Install
 
-**From a release** — grab the zip for your browser from
-[Releases](https://github.com/vviseguy/ad-muter/releases), unzip it, then:
+**From a release** — download
+[**ad-muter-chrome.zip**](https://github.com/vviseguy/ad-muter/releases/latest/download/ad-muter-chrome.zip)
+or
+[**ad-muter-firefox.zip**](https://github.com/vviseguy/ad-muter/releases/latest/download/ad-muter-firefox.zip)
+(always the [latest release](https://github.com/vviseguy/ad-muter/releases)),
+unzip it, then:
 
 | Browser | How to load |
 |---|---|

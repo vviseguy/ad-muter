@@ -1,0 +1,49 @@
+name: Detection broken (player changed)
+description: An ad wasn't muted, or muting stuck — usually a player markup change.
+labels: [detection]
+body:
+  - type: markdown
+    attributes:
+      value: >
+        Thanks — these reports are how the selectors stay current. The whole
+        fix is usually one file, and your DevTools output below tells us
+        exactly what changed.
+  - type: dropdown
+    id: site
+    attributes:
+      label: Site
+      options:
+        - Spotify (open.spotify.com)
+        - YouTube (www.youtube.com)
+    validations:
+      required: true
+  - type: dropdown
+    id: symptom
+    attributes:
+      label: What happened
+      options:
+        - Ad played with sound (no mute)
+        - Stayed muted after the ad ended
+        - Blur stuck or missing
+        - Chime didn't fire on a skippable ad
+        - Other (describe below)
+    validations:
+      required: true
+  - type: textarea
+    id: recipe
+    attributes:
+      label: Verification recipe output
+      description: >
+        Run the ~2-minute DevTools recipe from docs/DETECTION.md during an ad
+        (and once during content, if you can) and paste the output here.
+        https://github.com/vviseguy/ad-muter/blob/main/docs/DETECTION.md
+      render: json
+    validations:
+      required: false
+  - type: input
+    id: version
+    attributes:
+      label: Extension version + browser
+      placeholder: "0.5.1, Chrome 139"
+    validations:
+      required: true

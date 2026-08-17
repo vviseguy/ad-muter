@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 332" width="880" height="332" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <!-- Self-backgrounded so it reads identically on GitHub light and dark. -->
+  <defs>
+    <filter id="adblur" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="9"/>
+    </filter>
+    <linearGradient id="adart" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7c3aed"/>
+      <stop offset="0.5" stop-color="#db2777"/>
+      <stop offset="1" stop-color="#f59e0b"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="880" height="332" rx="16" fill="#0f172a"/>
+
+  <!-- ======================= left: the muted, blurred ad ============== -->
+  <g transform="translate(36,30)">
+    <!-- browser tab with the standard muted-speaker indicator -->
+    <path d="M0 34 q0 -14 14 -14 h206 q14 0 14 14 v10 h-234 z" fill="#1e293b"/>
+    <g transform="translate(14,26)" fill="#94a3b8">
+      <rect x="0" y="4" width="5" height="7" rx="1"/>
+      <polygon points="4,7.5 13,2 13,13 4,10.5"/>
+      <line x1="0" y1="1" x2="14" y2="14" stroke="#94a3b8" stroke-width="2.4" stroke-linecap="round"/>
+    </g>
+    <text x="38" y="37" font-size="13" fill="#cbd5e1">Web player</text>
+    <rect x="196" y="24" width="28" height="16" rx="8" fill="#b91c1c"/>
+    <text x="210" y="36" font-size="10.5" font-weight="700" fill="#fff" text-anchor="middle">AD</text>
+
+    <!-- player viewport: ad visuals blurred… -->
+    <rect x="0" y="44" width="480" height="216" rx="10" fill="#020617"/>
+    <g filter="url(#adblur)">
+      <rect x="60" y="84" width="360" height="120" rx="8" fill="url(#adart)" opacity="0.85"/>
+      <rect x="120" y="112" width="240" height="18" rx="9" fill="#f8fafc" opacity="0.8"/>
+      <rect x="150" y="146" width="180" height="12" rx="6" fill="#f8fafc" opacity="0.55"/>
+    </g>
+    <!-- …while the Skip button stays crisp and clickable -->
+    <rect x="356" y="212" width="104" height="34" rx="6" fill="#f8fafc"/>
+    <text x="408" y="234" font-size="14" font-weight="650" fill="#0f172a" text-anchor="middle">Skip ▸</text>
+
+    <text x="0" y="284" font-size="12.5" fill="#64748b">Ad break: tab muted, visuals blurred — the Skip button stays sharp.</text>
+  </g>
+
+  <!-- ======================= middle: the chime ======================== -->
+  <g transform="translate(556,138)" fill="none" stroke="#f59e0b" stroke-width="2.4" stroke-linecap="round">
+    <path d="M0 14 a 18 18 0 0 1 0 -0.01"/>
+    <path d="M6 8 a 16 16 0 0 1 8 12" opacity="0.9"/>
+    <path d="M14 2 a 24 24 0 0 1 12 18" opacity="0.6"/>
+    <path d="M22 -4 a 32 32 0 0 1 16 24" opacity="0.35"/>
+  </g>
+  <text x="572" y="188" font-size="11.5" fill="#64748b" text-anchor="middle">chime:</text>
+  <text x="572" y="203" font-size="11.5" fill="#64748b" text-anchor="middle">skippable</text>
+
+  <!-- ======================= right: the popup ========================= -->
+  <g transform="translate(636,52)">
+    <rect x="0" y="0" width="208" height="206" rx="12" fill="#1e293b" stroke="#334155"/>
+    <!-- mini icon + title -->
+    <g transform="translate(16,14) scale(0.19)">
+      <rect x="5" y="5" width="118" height="118" rx="26" fill="#0f172a"/>
+      <g fill="#f8fafc">
+        <rect x="26" y="51" width="20" height="26"/>
+        <polygon points="41,51 79,30 79,98 41,77"/>
+      </g>
+      <line x1="24" y1="24" x2="104" y2="104" stroke="#f87171" stroke-width="13" stroke-linecap="round"/>
+    </g>
+    <text x="48" y="31" font-size="14" font-weight="650" fill="#f8fafc">Ad Muter</text>
+
+    <text x="16" y="66" font-size="12.5" font-weight="600" fill="#f87171">Ad break — tab muted.</text>
+
+    <g font-size="12.5" fill="#cbd5e1">
+      <text x="16" y="102">Enabled</text>
+      <text x="16" y="136">Blur ads</text>
+      <text x="16" y="170">Chime when skippable</text>
+    </g>
+    <!-- switches, all on -->
+    <g>
+      <rect x="156" y="91" width="36" height="19" rx="9.5" fill="#0d9488"/>
+      <circle cx="183" cy="100.5" r="7.5" fill="#fff"/>
+      <rect x="156" y="125" width="36" height="19" rx="9.5" fill="#0d9488"/>
+      <circle cx="183" cy="134.5" r="7.5" fill="#fff"/>
+      <rect x="156" y="159" width="36" height="19" rx="9.5" fill="#0d9488"/>
+      <circle cx="183" cy="168.5" r="7.5" fill="#fff"/>
+    </g>
+    <text x="16" y="194" font-size="11.5" fill="#475569">Sites…</text>
+  </g>
+</svg>

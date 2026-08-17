@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- Hand-written port of scripts/gen-icons.mjs — same mark, scalable. -->
+  <rect x="5" y="5" width="118" height="118" rx="26" fill="#1e293b"/>
+  <g fill="#f8fafc">
+    <rect x="26" y="51" width="20" height="26"/>
+    <polygon points="41,51 79,30 79,98 41,77"/>
+  </g>
+  <line x1="24" y1="24" x2="104" y2="104" stroke="#f87171" stroke-width="13" stroke-linecap="round"/>
+</svg>

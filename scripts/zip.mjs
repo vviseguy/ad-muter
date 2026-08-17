@@ -75,7 +75,13 @@ export function buildZip(entries) {
   return Buffer.concat([...localParts, centralDir, end]);
 }
 
-async function zipTarget(target, version) {
+/**
+ * Zip names are deliberately version-free (ad-muter-chrome.zip): the
+ * release tag carries the version, the manifest inside the zip carries the
+ * version, and stable names give the README permanent
+ * `releases/latest/download/…` links.
+ */
+async function zipTarget(target) {
   const dir = path(`dist/${target}`);
   const names = (await readdir(dir, { recursive: true, withFileTypes: true }))
     .filter((entry) => entry.isFile())
@@ -91,18 +97,17 @@ async function zipTarget(target, version) {
       data: await readFile(`${dir}/${name}`),
     })),
   );
-  const outFile = path(`dist/ad-muter-${version}-${target}.zip`);
+  const outFile = path(`dist/ad-muter-${target}.zip`);
   await writeFile(outFile, buildZip(entries));
-  console.log(`packaged: dist/ad-muter-${version}-${target}.zip (${names.length} files)`);
+  console.log(`packaged: dist/ad-muter-${target}.zip (${names.length} files)`);
 }
 
 async function main() {
-  const pkg = JSON.parse(await readFile(path("package.json"), "utf8"));
   for (const target of TARGETS) {
     await access(path(`dist/${target}/manifest.json`)).catch(() => {
       throw new Error(`dist/${target} missing — run \`npm run build\` first`);
     });
-    await zipTarget(target, pkg.version);
+    await zipTarget(target);
   }
 }
 
