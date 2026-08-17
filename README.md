@@ -10,9 +10,9 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/vviseguy/ad-muter/releases/latest/download/ad-muter-chrome.zip"><img alt="Download for Chrome / Edge / Brave" src="https://img.shields.io/badge/⬇_Download-Chrome_·_Edge_·_Brave-1a73e8?style=for-the-badge" /></a>
-  &nbsp;
-  <a href="https://github.com/vviseguy/ad-muter/releases/latest/download/ad-muter-firefox.zip"><img alt="Download for Firefox" src="https://img.shields.io/badge/⬇_Download-Firefox-e66000?style=for-the-badge" /></a>
+  <a href="https://github.com/vviseguy/ad-muter/releases/latest/download/ad-muter-chrome.zip"><img alt="Download for Chrome / Edge / Brave" src="docs/img/download-chromium.svg" width="250" /></a>
+  &nbsp;&nbsp;
+  <a href="https://github.com/vviseguy/ad-muter/releases/latest/download/ad-muter-firefox.zip"><img alt="Download for Firefox" src="docs/img/download-firefox.svg" width="178" /></a>
 </p>
 
 <p align="center">

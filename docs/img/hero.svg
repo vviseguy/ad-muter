@@ -41,11 +41,13 @@
   </g>
 
   <!-- ======================= middle: the chime ======================== -->
-  <g transform="translate(556,138)" fill="none" stroke="#f59e0b" stroke-width="2.4" stroke-linecap="round">
-    <path d="M0 14 a 18 18 0 0 1 0 -0.01"/>
-    <path d="M6 8 a 16 16 0 0 1 8 12" opacity="0.9"/>
-    <path d="M14 2 a 24 24 0 0 1 12 18" opacity="0.6"/>
-    <path d="M22 -4 a 32 32 0 0 1 16 24" opacity="0.35"/>
+  <g transform="translate(556,138)">
+    <circle cx="1" cy="15" r="3" fill="#f59e0b"/>
+    <g fill="none" stroke="#f59e0b" stroke-width="2.4" stroke-linecap="round">
+      <path d="M6 8 a 16 16 0 0 1 8 12" opacity="0.9"/>
+      <path d="M14 2 a 24 24 0 0 1 12 18" opacity="0.6"/>
+      <path d="M22 -4 a 32 32 0 0 1 16 24" opacity="0.35"/>
+    </g>
   </g>
   <text x="572" y="188" font-size="11.5" fill="#64748b" text-anchor="middle">chime:</text>
   <text x="572" y="203" font-size="11.5" fill="#64748b" text-anchor="middle">skippable</text>
